@@ -1,3 +1,4 @@
+// MindMate AI: Clinical Wellness Companion App - Production Release
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';

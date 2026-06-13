@@ -35,13 +35,26 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final statsList = ref.read(studyStatsProvider);
     if (statsList.isNotEmpty) {
       final latest = statsList.last;
-      setState(() {
-        _inputStudyHours = latest.studyHours;
-        _inputSleepHours = latest.sleepHours;
-        _inputBreaks = latest.breaksTaken;
-        _inputWellness.clear();
-        _inputWellness.addAll(latest.wellnessActivities);
-      });
+      final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final latestStr = DateFormat('yyyy-MM-dd').format(latest.date);
+
+      if (todayStr == latestStr) {
+        setState(() {
+          _inputStudyHours = latest.studyHours;
+          _inputSleepHours = latest.sleepHours;
+          _inputBreaks = latest.breaksTaken;
+          _inputWellness.clear();
+          _inputWellness.addAll(latest.wellnessActivities);
+        });
+      } else {
+        // It's a new day! Carry over sleep metric but reset study metrics to zero
+        setState(() {
+          _inputStudyHours = 0.0;
+          _inputSleepHours = latest.sleepHours;
+          _inputBreaks = 0;
+          _inputWellness.clear();
+        });
+      }
     }
   }
 

@@ -40,27 +40,37 @@ class ThemeNotifier extends StateNotifier<ThemeState> {
   final LocalStorageService _storage;
 
   ThemeNotifier(this._storage)
-      : super(ThemeState(
-          isDark: _storage.getProfile() == null ? false : (_storage.getProfile()!.baselineStressLevel >= 7),
+      : super(const ThemeState(
+          isDark: false,
           isHighContrast: false,
         )) {
     _loadTheme();
   }
 
   void _loadTheme() {
-    final prefs = _storage;
-    final isDarkStored = prefs.getProfile() == null ? false : (prefs.getProfile()!.baselineStressLevel >= 7);
-    // Try to check if we stored other themes
-    final isDark = prefs.getProfile() != null && prefs.getProfile()!.baselineStressLevel >= 7; 
-    state = ThemeState(isDark: isDark, isHighContrast: false);
+    final isDarkStored = _storage.getThemeDark();
+    final isHighContrast = _storage.getThemeHighContrast();
+
+    if (isDarkStored != null) {
+      state = ThemeState(isDark: isDarkStored, isHighContrast: isHighContrast);
+    } else {
+      // Default initial heuristic based on onboarding profile stress level
+      final profile = _storage.getProfile();
+      final defaultDark = profile != null && profile.baselineStressLevel >= 7;
+      state = ThemeState(isDark: defaultDark, isHighContrast: isHighContrast);
+    }
   }
 
-  void toggleTheme() {
-    state = state.copyWith(isDark: !state.isDark);
+  void toggleTheme() async {
+    final nextDark = !state.isDark;
+    state = state.copyWith(isDark: nextDark);
+    await _storage.saveThemeDark(nextDark);
   }
 
-  void toggleHighContrast() {
-    state = state.copyWith(isHighContrast: !state.isHighContrast);
+  void toggleHighContrast() async {
+    final nextHC = !state.isHighContrast;
+    state = state.copyWith(isHighContrast: nextHC);
+    await _storage.saveThemeHighContrast(nextHC);
   }
 }
 

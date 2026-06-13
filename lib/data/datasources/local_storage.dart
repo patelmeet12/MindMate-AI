@@ -12,6 +12,8 @@ class LocalStorageService {
   static const String _keyJournals = 'mindmate_journals';
   static const String _keyStats = 'mindmate_stats';
   static const String _keyChats = 'mindmate_chats';
+  static const String _keyThemeDark = 'mindmate_theme_dark';
+  static const String _keyThemeHighContrast = 'mindmate_theme_high_contrast';
 
   final SharedPreferences _prefs;
 
@@ -139,6 +141,23 @@ class LocalStorageService {
     }).whereType<ChatMessage>().toList();
   }
 
+  // Theme Settings persistence
+  Future<void> saveThemeDark(bool isDark) async {
+    await _prefs.setBool(_keyThemeDark, isDark);
+  }
+
+  bool? getThemeDark() {
+    return _prefs.getBool(_keyThemeDark);
+  }
+
+  Future<void> saveThemeHighContrast(bool isHighContrast) async {
+    await _prefs.setBool(_keyThemeHighContrast, isHighContrast);
+  }
+
+  bool getThemeHighContrast() {
+    return _prefs.getBool(_keyThemeHighContrast) ?? false;
+  }
+
   // Clear data
   Future<void> clearAllData() async {
     await _prefs.remove(_keyProfile);
@@ -146,5 +165,7 @@ class LocalStorageService {
     await _prefs.remove(_keyJournals);
     await _prefs.remove(_keyStats);
     await _prefs.remove(_keyChats);
+    await _prefs.remove(_keyThemeDark);
+    await _prefs.remove(_keyThemeHighContrast);
   }
 }
